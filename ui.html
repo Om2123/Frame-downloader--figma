@@ -1,0 +1,48 @@
+<!-- In ui.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Figma Plugin UI</title>
+  </head>
+  <body>
+    <button onclick="fetchFramesAndImages()">Download Frames and Images</button>
+    <img src="" id="im" alt="" />
+    <script>
+      function fetchFramesAndImages() {
+        parent.postMessage(
+          { pluginMessage: { type: "fetchFramesAndImages" } },
+          "*"
+        );
+      }
+      onmessage = (event) => {
+        const message = event.data;
+        console.log(message.pluginMessage);
+        // Assuming 'imageBytes' is a Uint8Array obtained from exportAsync
+        const blob = new Blob([message.pluginMessage.imageBytes], {
+          type: "image/png",
+        });
+
+        // Create an object URL
+        const imageUrl = URL.createObjectURL(blob);
+
+        // Create an Image object
+        const image = new Image();
+        image.src = imageUrl;
+
+        const link = document.createElement("a");
+        link.href = imageUrl;
+
+        // Set the download attribute with a desired filename
+        link.download = "downloaded_image.png";
+
+        // Append the link to the document and trigger the click event
+        document.body.appendChild(link);
+        link.click();
+      };
+    </script>
+  </body>
+</html>
